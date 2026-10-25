@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meridian-afrl"
+version = "0.1.0"
+description = "Meridian Autonomous Financial Intelligence Laboratory — research/intelligence platform"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+
+dependencies = [
+    # Core dependencies will be added as features are implemented.
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+# ---------------------------------------------------------------------------
+# Ruff (linter + formatter)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+src = ["src"]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["meridian_afrl"]
+
+# ---------------------------------------------------------------------------
+# Mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+packages = ["meridian_afrl"]

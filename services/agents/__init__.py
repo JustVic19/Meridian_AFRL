@@ -1,1 +1,1 @@
-"""Agent package. Researcher, HypothesisScientist, and Quant are implemented."""
+"""Agent package. Researcher, HypothesisScientist, Quant, and Skeptic are implemented."""

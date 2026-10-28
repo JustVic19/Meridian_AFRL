@@ -1,0 +1,13 @@
+---
+description: Commit and push each finished implementation phase
+alwaysApply: true
+---
+
+# Publish finished phases
+
+When an implementation phase is finished and its tests pass, commit that phase and push it to the tracked remote.
+
+- Commit only the files that belong to the finished phase. Do not commit secrets, `.env`, or credentials.
+- Use a commit message that states why the phase exists.
+- Push the current branch to its remote. Do not force-push.
+- If the phase is not finished, or tests are failing, do not commit it.

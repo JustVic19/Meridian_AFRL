@@ -1,0 +1,4 @@
+{
+  "0": {"cik_str": 123, "ticker": "ACME", "title": "Acme Industrial Corp"},
+  "1": {"cik_str": 999, "ticker": "MALFORM", "title": "Malformed Corp"}
+}

@@ -1,0 +1,19 @@
+{
+  "initial_cash": "100",
+  "entry_timing": "CLOSE",
+  "holding_period_sessions": 2,
+  "sizing_fraction": "1",
+  "transaction_cost_bps": "0",
+  "slippage_bps": "0",
+  "periods_per_year": 1,
+  "benchmark_symbol": "SPX",
+  "bars": [
+    {"symbol": "AAA", "session": "2020-01-02", "close": "100"},
+    {"symbol": "AAA", "session": "2020-01-03", "close": "120"},
+    {"symbol": "AAA", "session": "2020-01-06", "close": "120"},
+    {"symbol": "SPX", "session": "2020-01-02", "close": "100"},
+    {"symbol": "SPX", "session": "2020-01-03", "close": "100"},
+    {"symbol": "SPX", "session": "2020-01-06", "close": "100"}
+  ],
+  "signals": [{"symbol": "AAA", "session": "2020-01-02"}]
+}

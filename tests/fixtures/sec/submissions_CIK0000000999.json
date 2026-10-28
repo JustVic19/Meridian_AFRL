@@ -1,0 +1,10 @@
+{
+  "cik": "999",
+  "name": "Malformed Corp",
+  "filings": {
+    "recent": {
+      "accessionNumber": ["0000000999-24-000001"],
+      "form": []
+    }
+  }
+}

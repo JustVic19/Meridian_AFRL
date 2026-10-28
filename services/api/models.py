@@ -22,6 +22,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from schemas.research import ARTIFACT_TYPES, HYPOTHESIS_STATUSES, sql_date_order, sql_in
+from schemas.validation import VALIDATION_STATUSES, VALIDATION_TEST_NAMES
 
 JsonDocument = dict[str, Any] | list[Any]
 
@@ -247,3 +248,71 @@ class Strategy(Base):
     created_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+
+
+class ValidationRun(Base):
+    __tablename__ = "validation_runs"
+    __table_args__ = (
+        CheckConstraint(sql_in("status", VALIDATION_STATUSES), name="ck_validation_runs_status"),
+        UniqueConstraint(
+            "experiment_id",
+            "policy_version",
+            name="uq_validation_runs_experiment_policy",
+        ),
+        Index("ix_validation_runs_experiment_id", "experiment_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    experiment_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey(
+            "experiments.id",
+            name="fk_validation_runs_experiment_id",
+            ondelete="RESTRICT",
+        ),
+        nullable=False,
+    )
+    policy_version: Mapped[str] = mapped_column(Text, nullable=False)
+    policy: Mapped[JsonDocument] = mapped_column(JSONB, nullable=False)
+    status: Mapped[str] = mapped_column(Text, nullable=False)
+    executed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+class ValidationResult(Base):
+    __tablename__ = "validation_results"
+    __table_args__ = (
+        CheckConstraint(
+            "sequence_index >= 0 AND sequence_index < 8",
+            name="ck_validation_results_sequence",
+        ),
+        CheckConstraint(
+            sql_in("test_name", VALIDATION_TEST_NAMES),
+            name="ck_validation_results_test_name",
+        ),
+        CheckConstraint(
+            sql_in("status", VALIDATION_STATUSES),
+            name="ck_validation_results_status",
+        ),
+        UniqueConstraint("run_id", "sequence_index", name="uq_validation_results_index"),
+        UniqueConstraint("run_id", "test_name", name="uq_validation_results_test"),
+        Index("ix_validation_results_run_id", "run_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    run_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey(
+            "validation_runs.id",
+            name="fk_validation_results_run_id",
+            ondelete="RESTRICT",
+        ),
+        nullable=False,
+    )
+    sequence_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    test_name: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(Text, nullable=False)
+    metrics: Mapped[JsonDocument | None] = mapped_column(JSONB)
+    detail: Mapped[JsonDocument] = mapped_column(JSONB, nullable=False)

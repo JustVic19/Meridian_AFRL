@@ -45,4 +45,4 @@ Host-side database checks use `postgresql+psycopg://afil:afil_local_dev@localhos
 
 ## Layout
 
-The laboratory currently includes the research schema, point-in-time checks, SEC fixtures, document retrieval, the Researcher, HypothesisScientist, Quant, and Skeptic agents, experiment-specification validation, the experiment engine, the code sandbox, and the deterministic backtest engine. Paper trading and the Reviewer are not implemented. Nothing here deploys live capital.
+The laboratory currently includes the research schema, point-in-time checks, SEC fixtures, document retrieval, the Researcher, HypothesisScientist, Quant, and Skeptic agents, experiment-specification validation, the experiment engine, the code sandbox, the deterministic backtest engine, and the validation engine. Paper trading, strategy selection, and the Reviewer are not implemented. Nothing here deploys live capital.

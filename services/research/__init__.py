@@ -1,1 +1,1 @@
-"""Research package root. The sandbox executes untrusted code outside this process."""
+"""Research package root. Experiment results stay sealed until the experiment is locked."""

@@ -7,6 +7,7 @@ from typing import Any
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     Date,
     DateTime,
@@ -22,6 +23,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from schemas.research import ARTIFACT_TYPES, HYPOTHESIS_STATUSES, sql_date_order, sql_in
+from schemas.scoring import SCORE_STATUSES
 from schemas.validation import VALIDATION_STATUSES, VALIDATION_TEST_NAMES
 
 JsonDocument = dict[str, Any] | list[Any]
@@ -316,3 +318,43 @@ class ValidationResult(Base):
     status: Mapped[str] = mapped_column(Text, nullable=False)
     metrics: Mapped[JsonDocument | None] = mapped_column(JSONB)
     detail: Mapped[JsonDocument] = mapped_column(JSONB, nullable=False)
+
+
+class ResearchScore(Base):
+    __tablename__ = "research_scores"
+    __table_args__ = (
+        CheckConstraint(sql_in("status", SCORE_STATUSES), name="ck_research_scores_status"),
+        CheckConstraint(
+            "live_trade_authorized = false",
+            name="ck_research_scores_not_a_trade",
+        ),
+        UniqueConstraint(
+            "experiment_id",
+            "policy_version",
+            name="uq_research_scores_experiment_policy",
+        ),
+        Index("ix_research_scores_experiment_id", "experiment_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    experiment_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey(
+            "experiments.id",
+            name="fk_research_scores_experiment_id",
+            ondelete="RESTRICT",
+        ),
+        nullable=False,
+    )
+    policy_version: Mapped[str] = mapped_column(Text, nullable=False)
+    policy: Mapped[JsonDocument] = mapped_column(JSONB, nullable=False)
+    status: Mapped[str] = mapped_column(Text, nullable=False)
+    score: Mapped[str | None] = mapped_column(Text)
+    components: Mapped[JsonDocument] = mapped_column(JSONB, nullable=False)
+    weights: Mapped[JsonDocument] = mapped_column(JSONB, nullable=False)
+    inputs: Mapped[JsonDocument] = mapped_column(JSONB, nullable=False)
+    live_trade_authorized: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    executed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
